@@ -34,6 +34,3 @@ while True:
 
     # Save the DataFrame to a CSV file
     df.to_csv(filename, index=False)
-
-    # Wait for an hour before repeating the process
-    time.sleep(3600)
