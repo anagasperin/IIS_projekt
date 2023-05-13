@@ -1,0 +1,39 @@
+name: Download API Data
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Run every hour at the top of the hour
+
+jobs:
+  download_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --without dev
+
+      - name: Run script
+        run: poetry run python ./src/data/fetch_bike_data.py
+
+      - name: Commit changes
+        run: |
+          git add data/raw/data.json
+          git commit -m 'Github Actions Bot Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
