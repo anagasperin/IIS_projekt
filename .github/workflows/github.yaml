@@ -35,7 +35,7 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add data/raw/data.json
+          git add data/raw/
           git commit -m 'Github Actions Bot Commit data'
 
       - name: Push changes
