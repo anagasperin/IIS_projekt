@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "bike-availability-mb"
+version = "0.1.0"
+description = ""
+authors = ["anagasperin <ana.gasperin@student.um.si>"]
+readme = "README.md"
+packages = [{include = "bike_availability_mb"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
