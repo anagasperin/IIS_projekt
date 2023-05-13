@@ -30,6 +30,11 @@ jobs:
         run: |
           poetry install --no-root --without dev
 
+      - name: Setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "anagasperin99@users.noreply.github.com"
+
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
