@@ -19,7 +19,7 @@ jobs:
     
     permissions:
       contents: write
-
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -51,6 +51,7 @@ jobs:
           git commit -m 'Github Actions Commit data'
 
       - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.TOKEN }}
           branch: ${{ github.ref }}
