@@ -5,23 +5,15 @@ import requests
 import time
 from datetime import datetime
 
-root_dir = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../..'))
-save_path = os.path.join(root_dir, 'data', 'raw')
 
 
-    # print('Fetching air data...')
-    # url = "https://api.modra.ninja/jcdecaux/maribor/stations"
-    # response = requests.get(url)
-    # if response.status_code == 200:
-    #     print("Fetched main datset")
-    #     data = json.loads(response.content)
-    #     with open(air, "w") as f:
-    #         json.dump(data, f)
-    # else:
-    #     print("Failed to retrieve JSON data")
 
-while True:
+def main():
+    root_dir = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), '../..'))
+    
+    save_path = os.path.join(root_dir, 'data', 'raw')
+
     # Fetch the data from the API
     response = requests.get("https://api.modra.ninja/jcdecaux/maribor/stations")
     data = response.json()
@@ -34,3 +26,6 @@ while True:
 
     # Save the DataFrame to a CSV file
     df.to_csv(filename, index=False)
+
+if __name__ == '__main__':
+    main()
