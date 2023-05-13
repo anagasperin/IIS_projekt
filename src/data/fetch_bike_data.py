@@ -4,9 +4,7 @@ import pandas as pd
 import requests
 import time
 from datetime import datetime
-
-
-
+import pytz
 
 def main():
     root_dir = os.path.abspath(os.path.join(
@@ -21,8 +19,11 @@ def main():
     # Convert the data to a DataFrame
     df = pd.json_normalize(data)
 
+    # Set the timezone to GMT+2
+    timezone = pytz.timezone('Europe/Berlin')
+
     # Create a filename based on the current datetime
-    filename = os.path.join(save_path, datetime.now().strftime("%Y-%m-%d_%H-%M-%S.csv"))
+    filename = os.path.join(save_path, datetime.now(timezone).strftime("%Y-%m-%d_%H-%M-%S.csv"))
 
     # Save the DataFrame to a CSV file
     df.to_csv(filename, index=False)
