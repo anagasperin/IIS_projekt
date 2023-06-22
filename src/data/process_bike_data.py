@@ -4,8 +4,7 @@ import os
 
 
 def main():
-    root_dir = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), '../..'))
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
     bike = os.path.join(root_dir, 'data', 'bike', 'merged_bike_data.json')
     bike_proc = os.path.join(root_dir, 'data', 'bike', 'processed_bike_data.csv')
 
@@ -18,19 +17,20 @@ def main():
     df = pd.DataFrame()
 
     print('Json to data frame...')
-    # prilagodimo json dataframe-u
-    filtered_data = []
-    for i in range(len(raw)):
-        jdata = json.loads(raw[i]['values'])
-        station = jdata['properties']['title']
-        date = raw[i]['date']
-        if i in range(len(station)):
-            if station[i]['title'] == 'GOSPOSVETSKA C. - III. GIMNAZIJA':
-                data = station[i]
-                df = pd.concat([df, pd.json_normalize(data)])
-    return filtered_data
 
+    for item in raw:
+        jdata = item['values']
+        features = jdata['FeatureCollection']['properties']['title']
 
+        if 'title' in features and features['title'] == 'GOSPOSVETSKA C. - III. GIMNAZIJA':
+            date = item['date']
+            capacity = features['capacity']
+            vehicles_available = features['vehicles_available']
+            capacity_free = features['capacity_free']
+
+            df = df.append({'date': date, 'capacity': capacity, 'vehicles_available': vehicles_available, 'capacity_free': capacity_free}, ignore_index=True)
+                
+    df.to_csv(bike_proc, index=False)
 if __name__ == '__main__':
     main()
 
