@@ -19,7 +19,13 @@ def filter_stations_by_title(stations, title):
                 parsed_date = datetime.strptime(station['date'], "%Y-%m-%d_%H-%M-%S")
                 station['date'] = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
 
-                filtered_stations.append(station)
+                station_data = {
+                    'date': station['date'],
+                    'capacity': feature['properties']['capacity'],
+                    'vehicles_available': feature['properties']['vehicles_available'],
+                    'capacity_free': feature['properties']['capacity_free']
+                }
+                filtered_stations.append(station_data)
     
     return filtered_stations
 
@@ -35,9 +41,12 @@ def main():
         filtered_stations = filter_stations_by_title(data, 'GOSPOSVETSKA C. - III. GIMNAZIJA')
 
         df = pd.DataFrame(filtered_stations)
-        df = df.reset_index(drop=True)
-        df['time'] = pd.to_datetime(df['date'], format='%Y-%m-%d %H:%M:%S')
-        df = df[['time', 'capacity', 'vehicles_available', 'capacity_free']]
+        print(df.head())
+        # save data to df with columns: time, capacity, vehicles_available, capacity_free
+        
+        # df = df.reset_index(drop=True)
+        df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d %H:%M:%S')
+        # df = df[['time', 'capacity', 'vehicles_available', 'capacity_free']]
         df.to_csv(bike_proc, index=False)
 
 if __name__ == '__main__':
