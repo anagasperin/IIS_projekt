@@ -1,37 +1,44 @@
+from datetime import datetime
 import pandas as pd
 import json
 import os
 
+def filter_stations_by_title(stations, title):
+    filtered_stations = []
+    for station in stations:
+        features_str = station['values']
+        features_str = features_str.replace("'", '\"')
+        features_str = features_str.replace("None", "\"NULL\"")
+
+        features_list = json.loads(features_str)
+    
+        for feature in features_list:
+            station_title = feature['properties']['title']
+
+            if title in station_title:
+                parsed_date = datetime.strptime(station['date'], "%Y-%m-%d_%H-%M-%S")
+                station['date'] = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
+
+                filtered_stations.append(station)
+    
+    return filtered_stations
 
 def main():
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
     bike = os.path.join(root_dir, 'data', 'bike', 'merged_bike_data.json')
     bike_proc = os.path.join(root_dir, 'data', 'bike', 'processed_bike_data.csv')
 
-    print('Processing bike data...')
+    # Create a dataframe with filtered stations and the columns of interest
+    with open(bike, 'r', encoding='utf-8') as json_file:  # Specify the encoding as 'utf-8'
+        data = json.loads(json_file.read())
 
-    f = open(bike, 'r', encoding='utf-8')
-    raw = json.load(f)
-    f.close()
+        filtered_stations = filter_stations_by_title(data, 'GOSPOSVETSKA C. - III. GIMNAZIJA')
 
-    df = pd.DataFrame()
+        df = pd.DataFrame(filtered_stations)
+        df = df.reset_index(drop=True)
+        df['time'] = pd.to_datetime(df['date'], format='%Y-%m-%d %H:%M:%S')
+        df = df[['time', 'capacity', 'vehicles_available', 'capacity_free']]
+        df.to_csv(bike_proc, index=False)
 
-    print('Json to data frame...')
-
-    for item in raw:
-        jdata = item['values']
-        features = jdata['FeatureCollection']['properties']['title']
-
-        if 'title' in features and features['title'] == 'GOSPOSVETSKA C. - III. GIMNAZIJA':
-            date = item['date']
-            capacity = features['capacity']
-            vehicles_available = features['vehicles_available']
-            capacity_free = features['capacity_free']
-
-            df = df.append({'date': date, 'capacity': capacity, 'vehicles_available': vehicles_available, 'capacity_free': capacity_free}, ignore_index=True)
-                
-    df.to_csv(bike_proc, index=False)
 if __name__ == '__main__':
     main()
-
-    #{'type': 'Feature', 'geometry': {'coordinates': [15.64053, 46.560761], 'type': 'Point'}, 'properties': {'system': 'maribor', 'provider': 'europlakat', 'type': 'bike_station', 'id': '3', 'title': 'GOSPOSVETSKA C. - III. GIMNAZIJA', 'image_url': None, 'capacity': 20, 'vehicles_available': 18, 'capacity_free': 2, 'address': None}, 'id': '3', 'bbox': None}
