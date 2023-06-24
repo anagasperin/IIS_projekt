@@ -149,7 +149,7 @@ jobs:
       #     github_token: ${{ secrets.TOKEN }}
       #     branch: ${{ github.ref }}
 
-  merge_data:
+  process_data:
     needs:
       - merge_bike_data
       - get_weather_data
@@ -185,7 +185,9 @@ jobs:
           git config user.email "anagasperin99@gmail.com"
 
       - name: Run scripts
-        run: poetry run python ./src/data/merge_processed_data.py
+        run: |
+            poetry run python ./src/data/process_bike_data.py
+            poetry run python ./src/data/process_weather_data.py
 
       # - name: Commit changes
       #   run: |
@@ -197,8 +199,9 @@ jobs:
       #   with:
       #     github_token: ${{ secrets.TOKEN }}
       #     branch: ${{ github.ref }}
-  process_data:
-    needs: merge_data
+
+  merge_processed_data:
+    needs: process_data
 
     runs-on: ubuntu-latest
 
@@ -231,9 +234,7 @@ jobs:
           git config user.email "anagasperin99@gmail.com"
 
       - name: Run scripts
-        run: |
-            poetry run python ./src/data/process_bike_data.py
-            poetry run python ./src/data/process_weather_data.py
+        run: poetry run python ./src/data/merge_processed_data.py
 
       # - name: Commit changes
       #   run: |
