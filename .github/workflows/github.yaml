@@ -198,9 +198,7 @@ jobs:
       #     github_token: ${{ secrets.TOKEN }}
       #     branch: ${{ github.ref }}
   process_data:
-    needs:
-      - merge_bike_data
-      - get_weather_data
+    needs: merge_data
 
     runs-on: ubuntu-latest
 
