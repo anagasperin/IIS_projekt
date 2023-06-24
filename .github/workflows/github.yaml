@@ -92,16 +92,16 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/merge_bike_data.py
 
-      - name: Commit changes
-        run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+      # - name: Commit changes
+      #   run: |
+      #     git add data/raw/
+      #     git commit -m 'Github Actions Commit data'
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.TOKEN }}
+      #     branch: ${{ github.ref }}
 
   get_weather_data:
 
@@ -138,16 +138,16 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
 
-      - name: Commit changes
-        run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+      # - name: Commit changes
+      #   run: |
+      #     git add data/raw/
+      #     git commit -m 'Github Actions Commit data'
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.TOKEN }}
+      #     branch: ${{ github.ref }}
 
   process_data:
     needs:
@@ -189,13 +189,13 @@ jobs:
             poetry run python ./src/data/process_bike_data.py
             poetry run python ./src/data/process_weather_data.py
 
-      - name: Commit changes
-        run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+      # - name: Commit changes
+      #   run: |
+      #     git add data/raw/
+      #     git commit -m 'Github Actions Commit data'
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.TOKEN }}
+      #     branch: ${{ github.ref }}
