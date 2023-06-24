@@ -7,7 +7,7 @@ import os
 def main():
     root_dir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../..'))
-    we = os.path.join(root_dir, 'data', 'raw', 'weather', 'data.json')
+    we = os.path.join(root_dir, 'data', 'raw_weather', 'raw_weather_data.json')
 
     print('Fetching weather data...')
     # Get the current date and time
@@ -20,8 +20,8 @@ def main():
     current_unix_time = int(current_date.timestamp())
     one_month_ago_unix_time = int(one_month_ago.timestamp())
 
-    latitude = '46.05'
-    longitude = '14.51'
+    latitude = '46.55472' 
+    longitude = '15.64667'
 
     end_date = datetime.datetime.utcfromtimestamp(
         current_unix_time).strftime('%Y-%m-%d')

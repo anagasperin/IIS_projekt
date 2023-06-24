@@ -31,8 +31,8 @@ def filter_stations_by_title(stations, title):
 
 def main():
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-    bike = os.path.join(root_dir, 'data', 'bike', 'merged_bike_data.json')
-    bike_proc = os.path.join(root_dir, 'data', 'bike', 'processed_bike_data.csv')
+    bike = os.path.join(root_dir, 'data', 'processed', 'merged_bike_data.json')
+    bike_proc = os.path.join(root_dir, 'data', 'processed', 'bike_data.csv')
 
     # Create a dataframe with filtered stations and the columns of interest
     with open(bike, 'r', encoding='utf-8') as json_file:  # Specify the encoding as 'utf-8'

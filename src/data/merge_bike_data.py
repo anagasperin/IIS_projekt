@@ -34,6 +34,6 @@ for filename in os.listdir(directory):
                 merged_data.append(data_entry)
 
 # Write the merged data to a JSON file
-output_file = 'data/bike/merged_bike_data.json'
+output_file = 'data/processed/merged_bike_data.json'
 with open(output_file, 'w', encoding='utf-8') as json_file:
     json.dump(merged_data, json_file, ensure_ascii=False)
