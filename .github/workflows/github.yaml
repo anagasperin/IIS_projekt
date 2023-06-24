@@ -1,4 +1,4 @@
-name: Download API Data
+name: Data Pipeline
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  download_data:
+  get_bike_data:
     runs-on: ubuntu-latest
 
     outputs:
@@ -44,6 +44,148 @@ jobs:
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
+
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+  merge_bike_data:
+    needs: get_bike_data
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --no-dev
+
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
+
+      - name: Run script
+        run: poetry run python ./src/data/merge_bike_data.py
+
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+  get_weather_data:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --no-dev
+
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
+
+      - name: Run script
+        run: poetry run python ./src/data/fetch_weather_data.py
+
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+  process_data:
+    needs: merge_bike_data, get_weather_data
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --no-dev
+
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
+
+      - name: Run scripts
+        run: |
+            poetry run python ./src/data/process_bike_data.py
+            poetry run python ./src/data/process_weather_data.py
 
       - name: Commit changes
         run: |
