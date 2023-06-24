@@ -7,7 +7,7 @@ import os
 def main():
     root_dir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../..'))
-    we = os.path.join(root_dir, 'data', 'raw_weather', 'raw_weather_data.json')
+    weather = os.path.join(root_dir, 'data', 'raw_weather', 'raw_weather_data.json')
 
     print('Fetching weather data...')
     # Get the current date and time
@@ -33,7 +33,7 @@ def main():
     if response.status_code == 200:
         print("Fetched weather history")
         data = json.loads(response.content)
-        with open(we, "w") as f:
+        with open(weather, "w") as f:
             json.dump(data, f)
     else:
         print("Failed to retrieve JSON data")

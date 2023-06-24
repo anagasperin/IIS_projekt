@@ -20,7 +20,7 @@ def filter_stations_by_title(stations, title):
                 station['date'] = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
 
                 station_data = {
-                    'date': station['date'],
+                    'datetime': station['date'],
                     'capacity': feature['properties']['capacity'],
                     'vehicles_available': feature['properties']['vehicles_available'],
                     'capacity_free': feature['properties']['capacity_free']
@@ -42,10 +42,11 @@ def main():
 
         df = pd.DataFrame(filtered_stations)
         print(df.head())
+        print(df.isnull().sum())
         # save data to df with columns: time, capacity, vehicles_available, capacity_free
         
         # df = df.reset_index(drop=True)
-        df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d %H:%M:%S')
+        df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d %H:%M:%S')
         # df = df[['time', 'capacity', 'vehicles_available', 'capacity_free']]
         df.to_csv(bike_proc, index=False)
 

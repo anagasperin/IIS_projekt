@@ -5,17 +5,17 @@ import os
 def main():
     root_dir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../..'))
-    we = os.path.join(root_dir, 'data', 'raw_weather', 'raw_weather_data.json')
-    we_proc = os.path.join(root_dir, 'data', 'processed', 'weather_data.csv')
+    weather = os.path.join(root_dir, 'data', 'raw_weather', 'raw_weather_data.json')
+    weather_proc = os.path.join(root_dir, 'data', 'processed', 'weather_data.csv')
 
     print('Processing weather data...')
-    f = open(we, 'r', encoding='utf-8')
+    f = open(weather, 'r', encoding='utf-8')
     raw = json.load(f)
     f.close()
 
     df = pd.DataFrame()
-    df['date'] = raw['hourly']['time']
-    df['date'] = pd.to_datetime(df['date'])
+    df['datetime'] = raw['hourly']['time']
+    df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d %H:%M:%S')
 
     df['temp'] = raw['hourly']['temperature_2m']
     df['temp'].fillna(df['temp'].mean(), inplace=True)
@@ -30,7 +30,7 @@ def main():
     df['wspeed'].fillna(df['wspeed'].mean(), inplace=True)
 
     print('Saving processed data...')
-    df.to_csv(we_proc, index=False)
+    df.to_csv(weather_proc, index=False)
 
 if __name__ == '__main__':
     main()
