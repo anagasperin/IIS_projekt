@@ -21,33 +21,12 @@ def main():
     weather_df['date'] = pd.to_datetime(weather_df['datetime']).dt.date
     weather_df['hour'] = pd.to_datetime(weather_df['datetime']).dt.hour
 
-    # bike_df['hour'] = bike_df['date'].dt.hour
-    # weather_df['hour'] = weather_df['date'].dt.hour
-
     merged_data = bike_df.merge(weather_df, on=['date', 'hour'], how='inner')
 
-    merged_data = merged_data.drop(columns=['datetime_x', 'datetime_y', 'date'])
+    columns = ['date', 'hour', 'vehicles_available', 'temp', 'hum', 'percp', 'wspeed', 'capacity', 'capacity_free']
+    merged_data = merged_data[columns]
 
     merged_data.to_csv(output_file, index=False)
-
-    # print('Merging data...')
-    # csv = pd.read_csv(bike_proc, encoding='utf_8')
-    # df = pd.DataFrame(csv)
-    # # df = df.rename(columns={'datum_od': 'date'})
-
-    # csv = pd.read_csv(weather_proc, encoding='utf_8')
-    # df1 = pd.DataFrame(csv)
-
-    # df['date'] = pd.to_datetime(df['date'])
-    # df1['date'] = pd.to_datetime(df1['date'])
-
-    # merged_df = pd.merge(df1, df, on='date', how='inner')
-    # merged_df = merged_df.drop(columns='date')
-
-    # print('Saving processed data...')
-    # merged_df.to_csv(merged, index=False)
-
-    # print('Finished!')
 
 
 if __name__ == '__main__':

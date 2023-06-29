@@ -1,0 +1,77 @@
+<div class="main-wrapper">
+  <h1>Air Quality in Ljubljana</h1>
+</div>
+<div class="content-wrapper">
+  <div class="current-weather" *ngIf="currentWeather != undefined">
+    <h3>Current weather</h3>
+    <div style="width: 500px" class="center-image">
+    <div >
+      <img
+        src="{{
+          'https://cdn-icons-png.flaticon.com/512/1555/1555512.png'
+        }}"
+        alt="Icon"
+      />
+    </div>
+    <table *ngIf="bikeAvailability != undefined">
+      <tr>
+        <td>Temperature</td>
+        <td>{{ currentWeather.main.temp }}</td>
+        <td>°C</td>
+      </tr>
+      <tr>
+        <td>Humidity</td>
+        <td>{{ currentWeather.main.humidity }}</td>
+        <td>%</td>
+      </tr>
+      <tr>
+        <td>Pressure</td>
+        <td>{{ currentWeather.main.pressure }}</td>
+        <td>hPa</td>
+      </tr>
+      <tr>
+        <td>Wind speed</td>
+        <td>{{ currentWeather.wind.speed }}</td>
+        <td>m/s</td>
+      </tr>
+      <tr>
+        <td>CO</td>
+        <td>{{ bikeAvailability.list[0].components.vehicles_available }}</td>
+        <td>μg/m3</td>
+      </tr>
+      <tr>
+        <td>NO2</td>
+        <td>{{ bikeAvailability.list[0].components.capacity_free }}</td>
+        <td>μg/m3</td>
+      </tr>
+      <tr>
+        <td>SO2</td>
+        <td>{{ bikeAvailability.list[0].components.capacity }}</td>
+        <td>μg/m3</td>
+      </tr>
+      <!-- <tr>
+        <td>PM10</td>
+        <td>{{ bikeAvailability.list[0].components.pm10 }}</td>
+        <td>μg/m3</td>
+      </tr> -->
+    </table>
+  </div>
+  <!-- <div class="air-pollution">
+    <h3>Forecast</h3>
+    <div style="width: 200px">
+      <canvas #chartCanvas2></canvas>
+      <table *ngIf="airPollution != undefined"> -->
+<!--           
+      </table>
+    </div> -->
+  </div>
+  <br>
+  <div class="content-wrapper">
+  <div class="forecast">
+    <h3>Forecast</h3>
+    <div style="width: 900px">
+      <canvas #chartCanvas></canvas>
+      </div>
+    </div>
+  </div>
+</div>
