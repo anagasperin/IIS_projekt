@@ -1,7 +1,5 @@
 [core]
-    remote = dagshub
+    remote = origin
 ['remote "origin"']
-    url = s3://dvc
-    endpointurl = https://dagshub.com/anagasperin/IIS_projekt.s3
-['remote "dagshub"']
-    url = https://dagshub.com/anagasperin/IIS_projekt.s3
+    url = https://dagshub.com/anagasperin/IIS_projekt.dvc
+    read_timeout = 0
