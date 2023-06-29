@@ -1,0 +1,3 @@
+['remote "origin-s3"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/anagasperin/IIS.s3
