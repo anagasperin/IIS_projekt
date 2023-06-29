@@ -1,7 +1,0 @@
-[core]
-    remote = https://dagshub.com/anagasperin/iis_projekt.dvc
-['remote "origin"']
-    url = s3://dvc
-    endpointurl = https://dagshub.com/anagasperin/IIS_projekt.s3
-['remote "https://dagshub.com/anagasperin/iis_projekt.dvc"']
-    url = ../data
