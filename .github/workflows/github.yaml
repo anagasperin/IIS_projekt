@@ -37,10 +37,25 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Install DVC
+        run: |
+          pip install dvc
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
       - name: Setup git config
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
+
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
@@ -84,24 +99,39 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Install DVC
+        run: |
+          pip install dvc
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
       - name: Setup git config
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
+
       - name: Run script
         run: poetry run python ./src/data/merge_bike_data.py
 
-      # - name: Commit changes
-      #   run: |
-      #     git add data/raw/
-      #     git commit -m 'Github Actions Commit data'
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN }}
-      #     branch: ${{ github.ref }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
 
   get_weather_data:
 
@@ -130,24 +160,39 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Install DVC
+        run: |
+          pip install dvc
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
       - name: Setup git config
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
+
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
 
-      # - name: Commit changes
-      #   run: |
-      #     git add data/raw/
-      #     git commit -m 'Github Actions Commit data'
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN }}
-      #     branch: ${{ github.ref }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
 
   process_data:
     needs:
@@ -179,26 +224,49 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Install DVC
+        run: |
+          pip install dvc
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
       - name: Setup git config
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
+
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
 
       - name: Run scripts
         run: |
             poetry run python ./src/data/process_bike_data.py
             poetry run python ./src/data/process_weather_data.py
 
-      # - name: Commit changes
-      #   run: |
-      #     git add data/raw/
-      #     git commit -m 'Github Actions Commit data'
+      - name: Check if data file has changed
+        id: check_changes
+        run: |
+          git diff --quiet data/processed/bike_data.csv || echo "::set-output name=CHANGED::true"
+          git diff --quiet data/processed/weather_data.csv || echo "::set-output name=CHANGED::true"
+        shell: bash
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN }}
-      #     branch: ${{ github.ref }}
+      - name: Commit changes
+        if: steps.check_changes.outputs.CHANGED == 'true'
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
 
   merge_processed_data:
     needs: process_data
@@ -228,21 +296,36 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Install DVC
+        run: |
+          pip install dvc
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
       - name: Setup git config
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
+
       - name: Run scripts
         run: poetry run python ./src/data/merge_processed_data.py
 
-      # - name: Commit changes
-      #   run: |
-      #     git add data/raw/
-      #     git commit -m 'Github Actions Commit data'
+      - name: Commit changes
+        run: |
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN }}
-      #     branch: ${{ github.ref }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
