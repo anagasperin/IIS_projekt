@@ -60,29 +60,16 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
-
-      - name: Add data
+      - name: Commit changes
         run: |
-          dvc add data 
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: Commit changed data
-
-      - name: Push to dvc
-        run: |
-          dvc push
-
-      # - name: Commit changes
-      #   run: |
-      #     git add data/raw/
-      #     git commit -m 'Github Actions Commit data'
-
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN }}
-      #     branch: ${{ github.ref }}
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
 
   merge_bike_data:
     needs: get_bike_data
