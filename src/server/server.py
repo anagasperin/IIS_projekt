@@ -35,6 +35,15 @@ def get_forecast():
     df['wspeed'] = raw['hourly']['windspeed_10m']
     df['wspeed'].fillna(df['wspeed'].mean(), inplace=True)
 
+    df['capacity'] = raw['hourly']['capacity']
+    df['capacity'].fillna(df['capacity'].mean(), inplace=True)
+
+    df['capacity_free'] = raw['hourly']['capacity_free']
+    df['capacity_free'].fillna(df['capacity_free'].mean(), inplace=True)
+
+    df['hour'] = raw['hourly']['hour']
+    df['hour'].fillna(df['hour'].mean(), inplace=True)
+
     return df
 
 

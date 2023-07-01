@@ -50,6 +50,10 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
@@ -163,7 +167,11 @@ jobs:
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
-          
+
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
