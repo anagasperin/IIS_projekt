@@ -39,7 +39,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install 
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
