@@ -1,5 +1,0 @@
-[core]
-    remote = origin
-['remote "origin"']
-    url = https://dvc
-    endpointurl = https://dagshub.com/anagasperin/IIS_projekt.dvc
