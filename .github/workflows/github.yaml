@@ -39,11 +39,13 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install 
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
