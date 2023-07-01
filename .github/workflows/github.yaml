@@ -11,25 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  install_dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Setup poetry
-        run: |
-          pipx install poetry
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10.5"
-          cache: 'poetry'
-      - name: Install dependencies
-        run: poetry install 
-
   get_bike_data:
-    needs: install_dependencies
     runs-on: ubuntu-latest
 
     outputs:
@@ -51,7 +33,13 @@ jobs:
           python-version: '3.10'
           cache: poetry
 
-      - uses: iterative/setup-dvc@v1
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --no-dev
+
+      - name: Install DVC
+        run: |
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
@@ -64,23 +52,21 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
           dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
-      - name: Add data
+      - name: Commit changes
         run: |
-          dvc add data
+          git add data/raw/
+          git commit -m 'Github Actions Commit data'
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: Commit changed data
-
-      - name: Push to dvc
-        run: |
-          dvc push
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
 
   merge_bike_data:
     needs: get_bike_data
@@ -143,7 +129,6 @@ jobs:
           branch: ${{ github.ref }}
 
   get_weather_data:
-
     runs-on: ubuntu-latest
 
     outputs:
@@ -184,7 +169,6 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
           dvc pull
 
       - name: Run script
