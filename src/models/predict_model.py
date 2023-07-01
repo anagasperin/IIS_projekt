@@ -21,9 +21,6 @@ def predict_model(train_path, test_path, model_path, train_metrics_path, metrics
         test = pd.DataFrame(csv)
         print('Data read')
 
-        train['date'] = pd.to_datetime(train['date'])
-        test['date'] = pd.to_datetime(test['date'])
-
         columns = np.array(train.columns)
         mask = columns != 'vehicles_available'
         x_train = train[columns[mask]]
