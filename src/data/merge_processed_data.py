@@ -23,7 +23,7 @@ def main():
 
     merged_data = bike_df.merge(weather_df, on=['date', 'hour'], how='inner')
 
-    columns = ['date', 'hour', 'vehicles_available', 'temp', 'hum', 'percp', 'wspeed', 'capacity', 'capacity_free']
+    columns = ['hour', 'vehicles_available', 'temp', 'hum', 'percp', 'wspeed', 'capacity', 'capacity_free']
     merged_data = merged_data[columns]
 
     merged_data.to_csv(output_file, index=False)
