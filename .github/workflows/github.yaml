@@ -37,9 +37,14 @@ jobs:
         run: |
           poetry install --no-root --no-dev
 
+      - name: Import dvc-s3 module
+        run: |
+          python -c "import dvc_s3"
+
+
       - name: Install DVC
         run: |
-          pip install dvc-s3
+          pip install dvc[s3]
 
       - name: Setup Dagshub
         run: |
@@ -155,6 +160,10 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-root --no-dev
+
+      - name: Import dvc-s3 module
+        run: |
+          python -c "import dvc_s3"
 
       - name: Install DVC
         run: |
