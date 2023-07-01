@@ -3721,17 +3721,6 @@ files = [
 ]
 
 [[package]]
-name = "sklearn"
-version = "0.0.post5"
-description = "deprecated sklearn package, use scikit-learn instead"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "sklearn-0.0.post5.tar.gz", hash = "sha256:7377c714a03a79bbe9196f435db931fd2a6fa8c68514da7ed3a251fd08c52e2c"},
-]
-
-[[package]]
 name = "smmap"
 version = "5.0.0"
 description = "A pure Python implementation of a sliding window memory map manager"
@@ -4383,4 +4372,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "160beccf5e16a7c96853cd87b66f1e7533971b6fa3d02ee7552435a1a9960ef4"
+content-hash = "8fff35bea65fa1cc79e50834037e452def3ca6e22af9226cb510cb3503f11d55"
