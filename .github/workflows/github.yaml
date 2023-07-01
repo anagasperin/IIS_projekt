@@ -50,9 +50,12 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Import dvc-s3 package
+        run: |
+          python -c "import s3"
+
       - name: Pull changes
         run: |
-          git pull
           dvc pull
 
       - name: Run script
@@ -110,6 +113,10 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Import dvc-s3 package
+        run: |
+          python -c "import s3"
+
       - name: Pull changes
         run: |
           git pull
@@ -130,7 +137,6 @@ jobs:
           branch: ${{ github.ref }}
 
   get_weather_data:
-
     runs-on: ubuntu-latest
 
     outputs:
@@ -169,9 +175,12 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
+      - name: Import dvc-s3 package
+        run: |
+          python -c "import s3"
+
       - name: Pull changes
         run: |
-          git pull
           dvc pull
 
       - name: Run script
