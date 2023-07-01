@@ -44,12 +44,11 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc[s3]
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
-          dvc remote modify origin --local secret_access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
@@ -104,12 +103,11 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc-s3
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
-          dvc remote modify origin --local secret_access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
@@ -167,12 +165,11 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc-s3
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
-          dvc remote modify origin --local secret_access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
@@ -229,12 +226,11 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc-s3
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
-          dvc remote modify origin --local secret_access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
@@ -300,12 +296,11 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc-s3
+          pip install dvc
 
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
-          dvc remote modify origin --local secret_access_key_id ${{ secrets.DAGSHUB_PASSWORD }}
 
       - name: Setup git config
         run: |
