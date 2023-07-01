@@ -39,7 +39,7 @@ jobs:
 
       - name: Import dvc-s3 module
         run: |
-          python -c "import dvc_s3"
+          python -c "import dvc-s3"
 
 
       - name: Install DVC
@@ -161,7 +161,7 @@ jobs:
 
       - name: Import dvc-s3 module
         run: |
-          python -c "import dvc_s3"
+          python -c "import dvc-s3"
 
       - name: Install DVC
         run: |
