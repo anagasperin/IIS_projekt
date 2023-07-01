@@ -50,13 +50,6 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
-      - name: Import dvc-s3 package
-        run: |
-          python -c "import dvc_s3_package"
-
-      - name: Pull changes
-        run: |
-          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
@@ -112,10 +105,6 @@ jobs:
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
-
-      - name: Import dvc-s3 package
-        run: |
-          python -c "import dvc_s3_package"
 
       - name: Pull changes
         run: |
@@ -174,14 +163,7 @@ jobs:
         run: |
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
-
-      - name: Import dvc-s3 package
-        run: |
-          python -c "import dvc_s3_package"
-
-      - name: Pull changes
-        run: |
-          dvc pull
+          
 
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
