@@ -39,7 +39,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc-s3
 
       - name: Setup Dagshub
         run: |
@@ -98,7 +98,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc-s3
 
       - name: Setup Dagshub
         run: |
@@ -156,7 +156,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc-s3
 
       - name: Setup Dagshub
         run: |
@@ -217,7 +217,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc-s3
 
       - name: Setup Dagshub
         run: |
@@ -287,7 +287,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc-s3
 
       - name: Setup Dagshub
         run: |
