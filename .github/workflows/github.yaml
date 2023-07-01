@@ -52,7 +52,7 @@ jobs:
 
       - name: Import dvc-s3 package
         run: |
-          python -c "import s3"
+          python -c "import dvc_s3_package"
 
       - name: Pull changes
         run: |
@@ -115,7 +115,7 @@ jobs:
 
       - name: Import dvc-s3 package
         run: |
-          python -c "import s3"
+          python -c "import dvc_s3_package"
 
       - name: Pull changes
         run: |
@@ -177,7 +177,7 @@ jobs:
 
       - name: Import dvc-s3 package
         run: |
-          python -c "import s3"
+          python -c "import dvc_s3_package"
 
       - name: Pull changes
         run: |
