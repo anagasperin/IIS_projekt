@@ -35,7 +35,7 @@ def main():
     df.to_csv(filename, index=False)
 
     # Push the temporary file to DVC
-    dvc.api.push(temp_file, remote='origin')
+    dvc.api.push_file(temp_file, remote='origin')
 
     # Remove the temporary file
     os.remove(temp_file)
