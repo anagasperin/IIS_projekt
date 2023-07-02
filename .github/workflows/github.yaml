@@ -39,7 +39,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
@@ -98,7 +98,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
@@ -155,7 +155,7 @@ jobs:
 
       - name: Install DVC
         run: |
-          pip install dvc
+          pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
