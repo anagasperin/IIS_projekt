@@ -60,7 +60,17 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
-        
+      - name: Add data
+        run: |
+          dvc add data
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit changed data
+
+      - name: Push to dvc
+        run: |
+          dvc push -r origin
 
   merge_bike_data:
     needs: get_bike_data

@@ -10,7 +10,9 @@ def main():
     bike_proc = os.path.join(root_dir, 'data', 'processed', 'bike_data.csv')
     weather_proc = os.path.join(root_dir, 'data', 'processed', 'weather_data.csv')
     output_file = os.path.join(root_dir, 'data', 'processed', 'current_data.csv')
-    os.makedirs(bike_proc, weather_proc, output_file, exist_ok=True)
+    os.makedirs(bike_proc, exist_ok=True)
+    os.makedirs(weather_proc, exist_ok=True)
+    os.makedirs(output_file, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as output_file:
 
