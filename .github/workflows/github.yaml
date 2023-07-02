@@ -79,76 +79,6 @@ jobs:
         run: |
           dvc push -r origin
 
-  merge_bike_data:
-    needs: get_bike_data
-
-    runs-on: ubuntu-latest
-
-    outputs:
-      sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
-    
-    permissions:
-      contents: write
-      
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Poetry
-        run: pipx install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-          cache: poetry
-
-      - name: Install dependencies
-        run: |
-          poetry install --no-root --no-dev
-
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
-
-      - name: Setup Dagshub
-        run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
-
-      - name: Setup git config
-        run: |
-          git config user.name "anagasperin"
-          git config user.email "anagasperin99@gmail.com"
-
-      - name: Pull changes
-        run: |
-          git pull
-          dvc pull
-
-      - name: Run script
-        run: poetry run python ./src/data/merge_bike_data.py
-
-      - name: Add data
-        run: |
-          dvc add data
-
-      - name: Commit changes
-        run: |
-          git add data.dvc
-          git commit -m 'Github Actions Bot Commit data'
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
-
-      - name: Push to dvc
-        run: |
-          dvc push -r origin
-
   get_weather_data:
     needs: get_bike_data
 
@@ -199,6 +129,78 @@ jobs:
 
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
+
+      - name: Add data
+        run: |
+          dvc add data
+
+      - name: Commit changes
+        run: |
+          git add data.dvc
+          git commit -m 'Github Actions Bot Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Push to dvc
+        run: |
+          dvc push -r origin
+
+  merge_bike_data:
+    needs: 
+      - get_bike_data
+      - get_weather_data
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --no-dev
+
+      - name: Install DVC
+        run: |
+          pip install dvc==2.51.0
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
+
+      - name: Pull changes
+        run: |
+          git pull
+          dvc pull
+
+      - name: Run script
+        run: poetry run python ./src/data/merge_bike_data.py
 
       - name: Add data
         run: |
