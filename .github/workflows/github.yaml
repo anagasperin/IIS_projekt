@@ -64,9 +64,16 @@ jobs:
         run: |
           dvc add data
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit changes
+        run: |
+          git add data.dvc
+          git commit -m 'Github Actions Bot Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: Commit changed data
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
       - name: Push to dvc
         run: |
@@ -188,9 +195,16 @@ jobs:
         run: |
           dvc add data
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit changes
+        run: |
+          git add data.dvc
+          git commit -m 'Github Actions Bot Commit data'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: Commit changed data
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
       - name: Push to dvc
         run: |
