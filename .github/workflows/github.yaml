@@ -185,8 +185,9 @@ jobs:
           git config user.name "anagasperin"
           git config user.email "anagasperin99@gmail.com"
 
-      - name: Pull changes dvc
+      - name: Pull changes
         run: |
+          git pull
           dvc pull
 
       - name: Run script
@@ -195,10 +196,6 @@ jobs:
       - name: Add data
         run: |
           dvc add data
-
-      - name: Pull changes git
-        run: |
-          git pull
 
       - name: Commit changes
         run: |
