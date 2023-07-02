@@ -11,10 +11,10 @@ def main():
     root_dir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../..'))
     
-    save_dir = os.path.join(root_dir, 'data', 'raw')
-    os.makedirs(save_dir, exist_ok=True)
+    bike = os.path.join(root_dir, 'data', 'raw')
+    os.makedirs(bike, exist_ok=True)
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    with tempfile.TemporaryDirectory() as save_path:
         # Fetch the data from the API
         response = requests.get("https://api.modra.ninja/jcdecaux/maribor/stations")
         data = response.json()
@@ -28,7 +28,7 @@ def main():
         # Create a filename based on the current datetime
         filename = datetime.now(timezone).strftime("%Y-%m-%d_%H-%M-%S.csv")
 
-        save_path = os.path.join(save_dir, filename)
+        save_path = os.path.join(bike, filename)
         # Save the DataFrame to a CSV file
         df.to_csv(save_path, index=False)
 
