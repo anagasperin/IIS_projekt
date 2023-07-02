@@ -70,7 +70,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push
+          dvc push -r origin data
 
   merge_bike_data:
     needs: get_bike_data
@@ -133,7 +133,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push
+          dvc push -r origin data
 
   get_weather_data:
     runs-on: ubuntu-latest
@@ -194,7 +194,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push
+          dvc push -r origin data
 
   process_data:
     needs:
