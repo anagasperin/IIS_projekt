@@ -70,7 +70,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin data
+          dvc push -r origin
 
   merge_bike_data:
     needs: get_bike_data
