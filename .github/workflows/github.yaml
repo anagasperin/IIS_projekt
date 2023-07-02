@@ -194,7 +194,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin data
+          dvc push -r origin
 
   process_data:
     needs:
