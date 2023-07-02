@@ -23,7 +23,6 @@ def main():
 
         # Set the timezone to GMT+2
         timezone = pytz.timezone('Europe/Berlin')
-
         
         # Create a filename based on the current datetime
         filename = os.path.join(save_path, datetime.now(timezone).strftime("%Y-%m-%d_%H-%M-%S.csv"))
@@ -31,6 +30,13 @@ def main():
         save_path = os.path.join(temp_dir, filename)
         # Save the DataFrame to a CSV file
         df.to_csv(save_path, index=False)
+
+        save_dir = os.path.join('data', 'raw')
+        os.makedirs(save_dir, exist_ok=True)
+
+        # Move the file to the 'data/raw' directory
+        final_path = os.path.join(save_dir, filename)
+        os.rename(save_path, final_path)
 
 if __name__ == '__main__':
     main()
