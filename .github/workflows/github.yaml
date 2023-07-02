@@ -72,7 +72,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
           branch: ${{ github.ref }}
 
       - name: Push to dvc
@@ -143,6 +143,8 @@ jobs:
           dvc push -r origin
 
   get_weather_data:
+    needs: get_bike_data
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -206,7 +208,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
           branch: ${{ github.ref }}
 
       - name: Push to dvc
