@@ -251,15 +251,7 @@ jobs:
             poetry run python ./src/data/process_bike_data.py
             poetry run python ./src/data/process_weather_data.py
 
-      - name: Check if data file has changed
-        id: check_changes
-        run: |
-          git diff --quiet data/processed/bike_data.csv || echo "::set-output name=CHANGED::true"
-          git diff --quiet data/processed/weather_data.csv || echo "::set-output name=CHANGED::true"
-        shell: bash
-
-      - name: Commit changes
-        if: steps.check_changes.outputs.CHANGED == 'true'
+      - name: Add data
         run: |
           dvc add data
 
