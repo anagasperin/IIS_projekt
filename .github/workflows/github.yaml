@@ -60,16 +60,17 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
-      - name: Commit changes
+      - name: Add data
         run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+          dvc add data
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+          commit_message: Commit changed data
+
+      - name: Push to dvc
+        run: |
+          dvc push
 
   merge_bike_data:
     needs: get_bike_data
@@ -122,16 +123,17 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/merge_bike_data.py
 
-      - name: Commit changes
+      - name: Add data
         run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+          dvc add data
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+          commit_message: Commit changed data
+
+      - name: Push to dvc
+        run: |
+          dvc push
 
   get_weather_data:
     runs-on: ubuntu-latest
@@ -182,16 +184,17 @@ jobs:
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
 
-      - name: Commit changes
+      - name: Add data
         run: |
-          git add data/raw/
-          git commit -m 'Github Actions Commit data'
+          dvc add data
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: ${{ github.ref }}
+          commit_message: Commit changed data
+
+      - name: Push to dvc
+        run: |
+          dvc push
 
   process_data:
     needs:

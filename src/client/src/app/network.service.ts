@@ -23,7 +23,7 @@ export class NetworkService {
   }
 
   getBikeAvailability(): Observable<any> {
-    const url = `"https://api.modra.ninja/jcdecaux/maribor/stations"`;
+    const url = `https://api.modra.ninja/jcdecaux/maribor/stations`;
     return this.httpClient.get<any>(url).pipe(
       catchError((error): any => {
         alert('Network error');

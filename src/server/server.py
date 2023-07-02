@@ -35,15 +35,6 @@ def get_forecast():
     df['wspeed'] = raw['hourly']['windspeed_10m']
     df['wspeed'].fillna(df['wspeed'].mean(), inplace=True)
 
-    df['capacity'] = raw['hourly']['capacity']
-    df['capacity'].fillna(df['capacity'].mean(), inplace=True)
-
-    df['capacity_free'] = raw['hourly']['capacity_free']
-    df['capacity_free'].fillna(df['capacity_free'].mean(), inplace=True)
-
-    df['hour'] = raw['hourly']['hour']
-    df['hour'].fillna(df['hour'].mean(), inplace=True)
-
     return df
 
 
@@ -61,6 +52,10 @@ def forecast():
     df_date = pd.to_datetime(df['date'])
     df_date = df_date.dt.strftime('%Y-%m-%d %H:%M:%S')
     df = df.drop(columns='date')
+
+    df['capacity'] = 0
+    df['capacity_free'] = 0
+    df['capacity'] = 0
 
     prediction = model.predict(df)
     df['vehicles_available'] = prediction
