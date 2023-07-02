@@ -64,13 +64,9 @@ jobs:
         run: |
           dvc add data
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Commit changed data
-
       - name: Push to dvc
         run: |
-          dvc push -r origin data
+          dvc push
 
   merge_bike_data:
     needs: get_bike_data
@@ -127,13 +123,9 @@ jobs:
         run: |
           dvc add data
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Commit changed data
-
       - name: Push to dvc
         run: |
-          dvc push -r origin data
+          dvc push 
 
   get_weather_data:
     runs-on: ubuntu-latest
@@ -188,13 +180,9 @@ jobs:
         run: |
           dvc add data
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Commit changed data
-
       - name: Push to dvc
         run: |
-          dvc push -r origin data
+          dvc push
 
   process_data:
     needs:
