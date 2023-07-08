@@ -8,22 +8,22 @@
       "datasource_name": "my_datasource"
     },
     "batch_markers": {
-      "ge_load_time": "20230708T165758.778639Z",
+      "ge_load_time": "20230708T174946.570133Z",
       "pandas_data_fingerprint": "3c35c3c1d17a65bf8b57296975dbd489"
     },
     "batch_spec": {
-      "path": "C:\\Users\\julij\\OneDrive\\IPT MAG\\1 Letnik\\2 semester\\IN\u017d. IS\\Projekt\\IIS_projekt\\great_expectations\\..\\data\\processed\\current_data.csv"
+      "path": "c:\\Users\\Uporabnik\\OneDrive\\INF\\IIS\\projekt\\great_expectations\\..\\data\\processed\\current_data.csv"
     },
     "checkpoint_id": null,
     "checkpoint_name": "current_data.csv_IIS_Projekt_Suite",
     "expectation_suite_name": "IIS_Projekt_Suite",
-    "great_expectations_version": "0.17.3",
+    "great_expectations_version": "0.17.1",
     "run_id": {
       "run_name": null,
-      "run_time": "2023-07-08T18:57:58.756638+02:00"
+      "run_time": "2023-07-08T19:49:46.538741+02:00"
     },
     "validation_id": null,
-    "validation_time": "20230708T165758.786512Z"
+    "validation_time": "20230708T174946.593691Z"
   },
   "results": [
     {
@@ -68,13 +68,13 @@
           "batch_id": "1dcfdf917e4bb7b7fdeda68a45af4477",
           "column_set": [
             "capacity_free",
-            "percp",
-            "temp",
             "wspeed",
-            "capacity",
             "vehicles_available",
+            "capacity",
+            "hour",
             "hum",
-            "hour"
+            "percp",
+            "temp"
           ],
           "exact_match": null
         },
