@@ -55,7 +55,11 @@ def main():
         TestColumnShareOfMissingValues(column_name='percp'),
         TestMeanInNSigmas(column_name='percp'),
         TestColumnShareOfMissingValues(column_name='wspeed'),
-        TestMeanInNSigmas(column_name='wspeed')
+        TestMeanInNSigmas(column_name='wspeed'),
+        TestColumnShareOfMissingValues(column_name='capacity_free'),
+        TestMeanInNSigmas(column_name='capacity_free'),
+        TestColumnShareOfMissingValues(column_name='hour'),
+        TestMeanInNSigmas(column_name='hour')
     ])
 
     tests.run(reference_data=reference, current_data=current)

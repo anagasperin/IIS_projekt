@@ -4,16 +4,16 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_v
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import numpy as np
-#import mlflow
+import mlflow
 
 
 def predict_model(train_path, test_path, model_path, train_metrics_path, metrics_path):
-    #MLFLOW_TRACKING_URI = "https://dagshub.com/anagasperin/IIS.mlflow"
-   # mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-   # mlflow.set_experiment("mlruns")
-    # mlflow.sklearn.autolog()
+    MLFLOW_TRACKING_URI = "https://dagshub.com/anagasperin/IIS_projekt.mlflow"
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment("mlruns")
+    mlflow.autolog()
 
-   # with mlflow.start_run():
+    with mlflow.start_run():
         csv = pd.read_csv(train_path, encoding='utf_8')
         train = pd.DataFrame(csv)
 
@@ -39,9 +39,9 @@ def predict_model(train_path, test_path, model_path, train_metrics_path, metrics
         mae_test = mean_absolute_error(y_test, prediction)
         evs_test = explained_variance_score(y_test, prediction)
 
-        # mlflow.log_metric("MSE Test", mse_test)
-        # mlflow.log_metric("MAE Test", mae_test)
-        # mlflow.log_metric("EVS Test", evs_test)
+        mlflow.log_metric("MSE Test", mse_test)
+        mlflow.log_metric("MAE Test", mae_test)
+        mlflow.log_metric("EVS Test", evs_test)
 
         # Make predictions for the training data
         predictions_train = model.predict(x_train)
@@ -51,9 +51,9 @@ def predict_model(train_path, test_path, model_path, train_metrics_path, metrics
         mae_train = mean_absolute_error(y_train, predictions_train)
         evs_train = explained_variance_score(y_train, predictions_train)
 
-        # mlflow.log_metric("MSE Train", mse_train)
-        # mlflow.log_metric("MAE Train", mae_train)
-        # mlflow.log_metric("EVS Train", evs_train)
+        mlflow.log_metric("MSE Train", mse_train)
+        mlflow.log_metric("MAE Train", mae_train)
+        mlflow.log_metric("EVS Train", evs_train)
 
         with open(train_metrics_path, 'w') as file:
             file.write('MAE:' + str(mae_train) + '\n')
@@ -72,8 +72,8 @@ def predict_model(train_path, test_path, model_path, train_metrics_path, metrics
 
         print('Model serialized')
 
-    # autolog_run = mlflow.last_active_run()
-    # print(autolog_run)
+        autolog_run = mlflow.last_active_run()
+        print(autolog_run)
 
 
 def main():
