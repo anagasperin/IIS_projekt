@@ -23,14 +23,14 @@
       "expectation_type": "expect_table_columns_to_match_set",
       "kwargs": {
         "column_set": [
-          "hum",
-          "vehicles_available",
-          "temp",
           "percp",
-          "capacity_free",
           "capacity",
+          "hum",
+          "capacity_free",
+          "temp",
           "wspeed",
-          "hour"
+          "hour",
+          "vehicles_available"
         ],
         "exact_match": null
       },
@@ -2275,10 +2275,10 @@
   "meta": {
     "citations": [
       {
-        "citation_date": "2023-07-08T17:07:45.220582Z",
+        "citation_date": "2023-07-08T17:52:12.338238Z",
         "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
       }
     ],
-    "great_expectations_version": "0.17.3"
+    "great_expectations_version": "0.17.1"
   }
 }
