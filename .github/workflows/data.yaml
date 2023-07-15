@@ -364,3 +364,37 @@ jobs:
       - name: Push to dvc
         run: |
           dvc push -r origin
+
+  # stability:
+  #   needs: merge_processed_data
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #       env:
+  #         SHA_NEW: ${{ needs.process_data.outputs.sha_new }}
+  #       with:
+  #         ref: ${{ needs.process_data.outputs.sha_new }}
+  #         fetch-depth: 0
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #         cache: poetry
+
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-root --no-dev
+
+  #     - name: DVC setup
+  #       run: |
+  #         poetry run dvc remote modify origin --local auth basic
+  #         poetry run dvc remote modify origin --local user ${{ secrets.DVC_USER }}
+  #         poetry run dvc remote modify origin --local password ${{ secrets.DVC_TOKEN }}
+  #         poetry run dvc pull -f -r origin
+
+  #     - name: Stability tests
+  #       run: poetry run python src/tests/data/data_stability.py
