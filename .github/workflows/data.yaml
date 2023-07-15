@@ -364,3 +364,210 @@ jobs:
       - name: Push to dvc
         run: |
           dvc push -r origin
+
+  # stability:
+  #   needs: merge_processed_data
+  #   runs-on: ubuntu-latest
+
+  #   outputs:
+  #     sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Poetry
+  #       run: pipx install poetry
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #         cache: poetry
+
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-root --no-dev
+
+  #     - name: Install DVC
+  #       run: |
+  #         pip install dvc==2.51.0
+
+  #     - name: Setup Dagshub
+  #       run: |
+  #         dvc remote modify origin --local auth basic
+  #         dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+  #         dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+      
+  #     - name: Pull changes
+  #       run: |
+  #         git pull
+  #         dvc pull
+
+  #     - name: Stability tests
+  #       run: poetry run python src/data/data_stability.py
+  
+  # validation:
+  #   needs: merge_processed_data
+
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Poetry
+  #       run: pipx install poetry
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #         cache: poetry
+
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-root --no-dev
+
+  #     - name: Install DVC
+  #       run: |
+  #         pip install dvc==2.51.0
+
+  #     - name: Setup Dagshub
+  #       run: |
+  #         dvc remote modify origin --local auth basic
+  #         dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+  #         dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+
+  #     - name: Pull changes
+  #       run: |
+  #         git pull
+  #         dvc pull
+
+  #     - name: Validation tests
+  #       run: poetry run python src/data/data_validation.py
+  
+  # update_reference_data:
+  #   needs: [stability, validation]
+
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Poetry
+  #       run: pipx install poetry
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #         cache: poetry
+
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-root --no-dev
+
+  #     - name: Install DVC
+  #       run: |
+  #         pip install dvc==2.51.0
+
+  #     - name: Setup Dagshub
+  #       run: |
+  #         dvc remote modify origin --local auth basic
+  #         dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+  #         dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+
+  #     - name: Pull changes
+  #       run: |
+  #         git pull
+  #         dvc pull
+
+  #     - name: Reference data update
+  #       run: poetry run python src/data/update_reference.py
+
+  #     - name: Git & DVC
+  #       run: |
+  #         git checkout main
+  #         dvc add data/reference_data.csv
+  #         git add data/reference_data.csv.dvc
+  #         git config user.name github-actions
+  #         git config user.email github-actions@github.com
+  #         dvc push -r origin
+      
+  #     - name: Push changes
+  #       if: ${{ steps.update_reference_data.outputs.sha_new != github.event.before }}
+  #       run: |
+  #         git push origin main
+  
+  # split_test_train:
+  #   needs: update_reference_data
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     sha_new: ${{steps.sha_new.outputs.SHA_NEW}}
+    
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Poetry
+  #       run: pipx install poetry
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #         cache: poetry
+
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-root --no-dev
+
+  #     - name: Install DVC
+  #       run: |
+  #         pip install dvc==2.51.0
+
+  #     - name: Setup Dagshub
+  #       run: |
+  #         dvc remote modify origin --local auth basic
+  #         dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+  #         dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+
+  #     - name: Pull changes
+  #       run: |
+  #         git pull
+  #         dvc pull
+
+  #     - name: Train/test split
+  #       run: poetry run python src/data/split_test_train.py
+
+  #     - name: Git & DVC
+  #       run: |
+  #         git checkout main
+  #         poetry run dvc add data/train.csv
+  #         poetry run dvc add data/test.csv
+  #         git config user.name github-actions
+  #         git config user.email github-actions@github.com
+  #         dvc push -r origin
+          
+  #     - name: Push changes
+  #       if: ${{ steps.split_test_train.outputs.sha_new != github.event.before }}
+  #       run: |
+  #         git push origin main
