@@ -51,26 +51,6 @@ def transform_test(test_path, categorical_transform, numerical_transform):
     ])
 
     arr = test_preprocessor.fit_transform(test)
-
-    test = pd.DataFrame(
-        arr, columns=["hour", "vehicles_available", "temp", "hum", "percp", "wspeed", "capacity", "capacity_free"])
-    return test.astype('float')
-
-def transform_test(test_path, categorical_transform, numerical_transform):
-    csv = pd.read_csv(test_path, encoding='utf_8')
-    test = pd.DataFrame(csv)
-    print('Data read')
-
-    cat_features = test.select_dtypes(include=['object']).columns.tolist()
-    num_features = test.select_dtypes(
-        include=['float64', 'int64']).columns.tolist()
-
-    test_preprocessor = ColumnTransformer([
-        ('availability_transform', categorical_transform, cat_features),
-        ('normal_transform', numerical_transform, num_features)
-    ])
-
-    arr = test_preprocessor.fit_transform(test)
     test = pd.DataFrame(
         arr, columns=["hour", "vehicles_available", "temp", "hum", "percp", "wspeed", "capacity", "capacity_free"])
     return test
@@ -135,25 +115,34 @@ def train_model(train_path, test_path):
     mae_test = mean_absolute_error(y_test, prediction)
     evs_test = explained_variance_score(y_test, prediction)
 
+    # Log metrics to the MLflow experiment
     mlflow.log_metric("MSE Test", mse_test)
     mlflow.log_metric("MAE Test", mae_test)
     mlflow.log_metric("EVS Test", evs_test)
 
     client = MlflowClient()
-    m = client.get_latest_versions("MLPRegressor", stages=["Production"])[0]
-    history = client.get_metric_history(m.run_id, "MAE Test")
+    production_models = client.get_latest_versions("MLPRegressor", stages=["Production"])
 
-    minM = history[0].value
-    for h in history:
-        if h.value < minM:
-            minM = h.value
-
-    if mae_test < minM:
-        print("New best model")
-        client.transition_model_version_stage(
-            name="MLPRegressor", version=m.version, stage="Production",
+    if not production_models:  # If there are no models in production, register the new model
+        print("No models in production. Registering the new model.")
+        mlflow.register_model(
+            "runs:/{}/MLPRegressor".format(search.best_estimator_._final_estimator._final_estimator.run_id),
+            "MLPRegressor",
+            stage="Production"
         )
+    else:
+        m = production_models[0]
+        history = client.get_metric_history(m.run_id, "MAE Test")
+        minM = history[0].value
+        for h in history:
+            if h.value < minM:
+                minM = h.value
 
+        if mae_test < minM:  # Update the production model if the new model is better
+            print("New best model. Updating the production model.")
+            client.transition_model_version_stage(
+                name="MLPRegressor", version=m.version, stage="Production",
+            )
 
 def main():
     import os
