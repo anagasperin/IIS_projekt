@@ -5,8 +5,8 @@
     {
       "expectation_type": "expect_table_row_count_to_be_between",
       "kwargs": {
-        "max_value": 1358,
-        "min_value": 1358
+        "max_value": null,
+        "min_value": 800
       },
       "meta": {
         "profiler_details": {
@@ -23,14 +23,14 @@
       "expectation_type": "expect_table_columns_to_match_set",
       "kwargs": {
         "column_set": [
-          "percp",
-          "temp",
-          "vehicles_available",
-          "wspeed",
-          "hour",
-          "capacity",
           "hum",
-          "capacity_free"
+          "temp",
+          "capacity",
+          "capacity_free",
+          "hour",
+          "percp",
+          "wspeed",
+          "vehicles_available"
         ],
         "exact_match": null
       },
@@ -45,7 +45,7 @@
   "meta": {
     "citations": [
       {
-        "citation_date": "2023-07-21T18:43:20.443269Z",
+        "citation_date": "2023-07-21T19:09:51.301619Z",
         "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
       }
     ],
