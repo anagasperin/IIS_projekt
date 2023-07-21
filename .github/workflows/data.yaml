@@ -502,8 +502,7 @@ jobs:
 
       - name: Git & DVC
         run: |
-          git checkout main
-          dvc add data/reference_data.csv
+          dvc add data/processed/reference_data.csv
           git config user.name github-actions
           git config user.email github-actions@github.com
           dvc push -r origin
@@ -559,9 +558,8 @@ jobs:
 
       - name: Git & DVC
         run: |
-          git checkout main
-          poetry run dvc add data/train.csv
-          poetry run dvc add data/test.csv
+          poetry run dvc add data/processed/train.csv
+          poetry run dvc add data/processed/test.csv
           git config user.name github-actions
           git config user.email github-actions@github.com
           dvc push -r origin
