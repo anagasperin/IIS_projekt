@@ -186,8 +186,8 @@ jobs:
       - name: Setup Dagshub
         run: |
           dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD }}
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
 
       - name: Setup git config
         run: |
