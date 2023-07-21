@@ -28,7 +28,7 @@ datasources:
           pattern: (.*)
         module_name: great_expectations.datasource.data_connector
         class_name: InferredAssetFilesystemDataConnector
-        base_directory: ..\data\processed
+        base_directory: ../data/processed
       default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
         class_name: RuntimeDataConnector
