@@ -492,6 +492,11 @@ jobs:
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
 
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
+
       - name: Pull changes
         run: |
           git pull
@@ -554,6 +559,11 @@ jobs:
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+
+      - name: Setup git config
+        run: |
+          git config user.name "anagasperin"
+          git config user.email "anagasperin99@gmail.com"
 
       - name: Pull changes
         run: |
