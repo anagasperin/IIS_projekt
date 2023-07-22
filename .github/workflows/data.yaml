@@ -500,19 +500,24 @@ jobs:
       - name: Reference data update
         run: poetry run python src/data/update_reference.py
 
-      - name: Git & DVC
+      - name: Add data
         run: |
-          git checkout main
-          dvc add data/reference_data.csv
-          git add data/reference_data.csv.dvc
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          dvc push -r origin
-      
+          dvc add data
+
+      - name: Commit changes
+        run: |
+          git add data.dvc
+          git commit -m 'Github Actions Bot Commit data'
+
       - name: Push changes
-        if: ${{ steps.update_reference_data.outputs.sha_new != github.event.before }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Push to dvc
         run: |
-          git push origin main
+          dvc push -r origin
   
   split_test_train:
     needs: update_reference_data
@@ -558,16 +563,35 @@ jobs:
       - name: Train/test split
         run: poetry run python src/data/split_test_train.py
 
-      - name: Git & DVC
+      - name: Add data
         run: |
-          git checkout main
-          poetry run dvc add data/train.csv
-          poetry run dvc add data/test.csv
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          dvc push -r origin
-          
+          dvc add data
+
+      - name: Commit changes
+        run: |
+          git add data.dvc
+          git commit -m 'Github Actions Bot Commit data'
+
       - name: Push changes
-        if: ${{ steps.split_test_train.outputs.sha_new != github.event.before }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Push to dvc
         run: |
-          git push origin main
+          dvc push -r origin
+
+      # - name: Git & DVC
+      #   run: |
+      #     git checkout main
+      #     poetry run dvc add data/train.csv
+      #     poetry run dvc add data/test.csv
+      #     git config user.name github-actions
+      #     git config user.email github-actions@github.com
+      #     dvc push -r origin
+          
+      # - name: Push changes
+      #   if: ${{ steps.split_test_train.outputs.sha_new != github.event.before }}
+      #   run: |
+      #     git push origin main
