@@ -115,34 +115,47 @@ def train_model(train_path, test_path):
     mae_test = mean_absolute_error(y_test, prediction)
     evs_test = explained_variance_score(y_test, prediction)
 
-    # Log metrics to the MLflow experiment
     mlflow.log_metric("MSE Test", mse_test)
     mlflow.log_metric("MAE Test", mae_test)
     mlflow.log_metric("EVS Test", evs_test)
 
     client = MlflowClient()
-    production_models = client.get_latest_versions("MLPRegressor", stages=["Production"])
+    m = client.get_latest_versions(name='MLPRegressor')[0]
+    history = client.get_metric_history(m.run_id, key='MAE Test')
 
-    if not production_models:  # If there are no models in production, register the new model
-        print("No models in production. Registering the new model.")
-        mlflow.register_model(
-            "runs:/{}/MLPRegressor".format(search.best_estimator_._final_estimator._final_estimator.run_id),
-            "MLPRegressor",
-            stage="Production"
+    # Retrieve the latest production model
+    production_models = client.get_latest_versions(name='MLPRegressor', stages=['Production'])
+    if len(production_models) > 0:
+        production_model = production_models[0]
+        production_version = production_model.version
+    else:
+        production_version = None
+
+    minM = history[0].value
+    for h in history:
+        if h.value < minM:
+            minM = h.value
+
+    if mae_test < minM:  # Update the production model if the new model is better
+        print("New best model. Updating the production model.")
+        if production_version is not None:
+            # Move the current production model to the staging stage
+            client.transition_model_version_stage(
+                name="MLPRegressor", version=production_version, stage="Staging"
+            )
+
+        # Transition the new model to the production stage
+        client.transition_model_version_stage(
+            name="MLPRegressor", version=m.version, stage="Production"
         )
     else:
-        m = production_models[0]
-        history = client.get_metric_history(m.run_id, "MAE Test")
-        minM = history[0].value
-        for h in history:
-            if h.value < minM:
-                minM = h.value
-
-        if mae_test < minM:  # Update the production model if the new model is better
-            print("New best model. Updating the production model.")
-            client.transition_model_version_stage(
-                name="MLPRegressor", version=m.version, stage="Production",
-            )
+        print("The new model is not better than the production model. Staging the new model.")
+        # Transition the new model to the staging stage
+        client.transition_model_version_stage(
+            name="MLPRegressor",
+            version=m.version,
+            stage="Staging"
+        )
 
 def main():
     import os
@@ -152,13 +165,8 @@ def main():
 
     train_path = os.path.join(root_dir, 'data', 'processed', 'train.csv')
     test_path = os.path.join(root_dir, 'data', 'processed', 'test.csv')
-    model_path = os.path.join(root_dir, 'models', 'linear')
-    train_metrics_path = os.path.join(root_dir, 'reports', 'train_metrics.txt')
-    metrics_path = os.path.join(root_dir, 'reports', 'metrics.txt')
 
-    train_model(train_path, test_path
-                #, model_path, train_metrics_path, metrics_path
-                )
+    train_model(train_path, test_path)
 
 
 if __name__ == '__main__':
