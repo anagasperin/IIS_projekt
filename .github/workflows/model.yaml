@@ -1,0 +1,44 @@
+name: Model Pipeline
+
+on:
+  workflow_run:
+    workflows: [Data Pipeline]
+    types:
+      - completed
+
+jobs:
+  train_model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          pipx install poetry
+          poetry install --no-root --no-dev
+
+      - name: mlflow
+        run: |
+          export MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          export MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+
+      - name: Setup Dagshub
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          dvc pull
+      - name: Train model
+        run: poetry run python ./src/models/predict_model.py
+        env:
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}

@@ -1,0 +1,122 @@
+# name: Deploy Pipeline
+
+# on:
+#   push:
+#     branches: [ main ]
+#   schedule:
+#     - cron: '0 0 * * *' # Runs daily at 01:00 (CEST/GMT+1)
+
+# jobs:
+#   test_api:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.10'
+#           cache: poetry
+
+#       - name: Install dependencies
+#         run: |
+#           pipx install poetry
+#           poetry install --no-root --no-dev
+
+#       - name: API tests
+#         run: poetry run pytest ./src/tests/api/api.py
+#         env:
+#           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+
+#   test_server:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+#       - name: Set up Python
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.10'
+#           cache: poetry
+
+#       - name: Install dependencies
+#         run: |
+#           pipx install poetry
+#           poetry install --no-root --no-dev
+
+#       - name: Prediction API
+#         run: |
+#           poetry run uvicorn src.serve.api:app --host 0.0.0.0 --port 8080 &
+#           sleep 75
+#         env:
+#           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+
+#       - name: Server tests
+#         run: poetry run pytest ./src/tests/server
+#         env:
+#           MONGO_URI: ${{ secrets.MONGO_URI }}
+#           PREDICTION_API_URL: http://localhost:8080/predict
+
+#   deploy:
+#     needs: [test_api, test_server]
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Create .env files
+#         env:
+#           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+#           MONGO_URI: ${{ secrets.MONGO_URI }}
+#           PREDICTION_API_URL: ${{ secrets.PREDICTION_API_URL }}
+#         run: |
+#           echo "MLFLOW_TRACKING_USERNAME=${MLFLOW_TRACKING_USERNAME}" >> .env
+#           echo "MLFLOW_TRACKING_PASSWORD=${MLFLOW_TRACKING_PASSWORD}" >> .env
+#           echo "MONGO_URI=${MONGO_URI}" >> .env
+#           echo "PREDICTION_API_URL=${PREDICTION_API_URL}" >> .env
+
+#       - name: Set up Okteto CLI
+#         uses: okteto/context@latest
+#         with:
+#           token: ${{ secrets.OKTETO_TOKEN }}
+
+#       - name: Deploy to Okteto
+#         uses: okteto/deploy-stack@latest
+#         with:
+#           name: guess_and_dress
+#           build: true
+
+#   monitor:
+#     if: ${{ github.event_name == 'schedule' }}
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.10'
+
+#       - name: Install dependencies
+#         run: |
+#           pipx install poetry
+#           poetry install --no-root --no-dev
+
+#       - name: Monitor
+#         run: poetry run python ./src/serve/monitor.py
+#         env:
+#           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+#           MONGO_URI: ${{ secrets.MONGO_URI }}
