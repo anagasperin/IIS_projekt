@@ -1,10 +1,12 @@
 name: Model Pipeline
 
 on:
-  workflow_run:
-    workflows: [Data Pipeline]
-    types:
-      - completed
+  push:
+      branches: 
+        - main
+
+  schedule:
+    - cron: '0 7 * * *' # Run at 7 AM every day
 
 jobs:
   train_model:
@@ -42,7 +44,7 @@ jobs:
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
           dvc pull
-          
+
       - name: Train model
         run: poetry run python ./src/models/predict_model.py
         env:
