@@ -26,6 +26,10 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-root --no-dev
+      
+      - name: Install DVC
+        run: |
+          pip install dvc==2.51.0
 
       - name: mlflow
         run: |
@@ -38,6 +42,7 @@ jobs:
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
           dvc pull
+          
       - name: Train model
         run: poetry run python ./src/models/predict_model.py
         env:
