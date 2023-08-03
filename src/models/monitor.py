@@ -13,7 +13,6 @@ clientdb = pymongo.MongoClient(os.environ['MONGO_URI'])
 db = clientdb.iis
 col = db.prediction
 
-
 def transform_categorical(column):
     pm10 = column['pm10']
     pm10 = pm10.str.replace('<', '')

@@ -1,5 +1,5 @@
 <div class="main-wrapper">
-  <h1>Air Quality in Ljubljana</h1>
+  <h1>Bike Availability on Mbajk stations in Maribor</h1>
 </div>
 <div class="content-wrapper">
   <div class="current-weather" *ngIf="currentWeather != undefined">
@@ -49,21 +49,7 @@
         <td>{{ bikeAvailability.list[0].components.capacity }}</td>
         <td>μg/m3</td>
       </tr>
-      <!-- <tr>
-        <td>PM10</td>
-        <td>{{ bikeAvailability.list[0].components.pm10 }}</td>
-        <td>μg/m3</td>
-      </tr> -->
     </table>
-  </div>
-  <!-- <div class="air-pollution">
-    <h3>Forecast</h3>
-    <div style="width: 200px">
-      <canvas #chartCanvas2></canvas>
-      <table *ngIf="airPollution != undefined"> -->
-<!--           
-      </table>
-    </div> -->
   </div>
   <br>
   <div class="content-wrapper">
