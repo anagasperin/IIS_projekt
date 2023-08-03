@@ -1,52 +1,52 @@
-name: Model Pipeline
+# name: Model Pipeline
 
-on:
-  push:
-      branches: 
-        - main
+# on:
+#   push:
+#       branches: 
+#         - main
 
-  schedule:
-    - cron: '0 7 * * *' # Run at 7 AM every day
+#   schedule:
+#     - cron: '0 7 * * *' # Run at 7 AM every day
 
-jobs:
-  train_model:
-    runs-on: ubuntu-latest
+# jobs:
+#   train_model:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Install Poetry
-        run: pipx install poetry
+#       - name: Install Poetry
+#         run: pipx install poetry
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-          cache: poetry
+#       - name: Set up Python
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.10'
+#           cache: poetry
 
-      - name: Install dependencies
-        run: |
-          poetry install --no-root --no-dev
+#       - name: Install dependencies
+#         run: |
+#           poetry install --no-root --no-dev
       
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+#       - name: Install DVC
+#         run: |
+#           pip install dvc==2.51.0
 
-      - name: mlflow
-        run: |
-          export MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          export MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+#       - name: mlflow
+#         run: |
+#           export MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           export MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}
 
-      - name: Setup Dagshub
-        run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
-          dvc pull
+#       - name: Setup Dagshub
+#         run: |
+#           dvc remote modify origin --local auth basic
+#           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+#           dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+#           dvc pull
 
-      - name: Train model
-        run: poetry run python ./src/models/predict_model.py
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+#       - name: Train model
+#         run: poetry run python ./src/models/predict_model.py
+#         env:
+#           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+#           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
