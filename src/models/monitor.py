@@ -2,6 +2,7 @@ import pandas as pd
 import mlflow
 import os
 import pymongo
+from pymongo import MongoClient
 from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score
 
 
@@ -9,9 +10,9 @@ MLFLOW_TRACKING_URI = "https://dagshub.com/anagasperin/IIS_projekt.mlflow"
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_experiment("monitoring")
 
-clientdb = pymongo.MongoClient(os.environ['MONGO_URI'])
-db = clientdb.iis
-col = db.prediction
+client = MongoClient('mongodb+srv://admin:admin@bikeavailability.xapwjao.mongodb.net/')
+db = client['IISProjekt']
+collection = db['BikeAvailability']
 
 def transform_categorical(column):
     pm10 = column['pm10']
@@ -37,7 +38,7 @@ def evaluate_predictions(data_air):
     pm10 = pm10.rename(columns={'datum_od': 'date', 'pm10': 't'})
     df = pm10
 
-    data = col.find()
+    data = collection.find()
     df1 = pd.DataFrame()
 
     for x in data:

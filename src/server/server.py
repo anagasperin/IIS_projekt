@@ -6,6 +6,7 @@ import os
 from datetime import datetime, timedelta
 from flask_cors import CORS, cross_origin
 from mlflow import MlflowClient
+from pymongo import MongoClient
 import mlflow
 import requests
 import pymongo
@@ -20,9 +21,9 @@ run_id = client.get_latest_versions(
     'MLPRegressor', stages=['production'])[0].run_id
 model = mlflow.pyfunc.load_model(f'runs:/{run_id}/MLPRegressor')
 
-clientdb = pymongo.MongoClient(os.environ['MONGO_URI'])
-db = clientdb.iis
-col = db.prediction
+client = MongoClient('mongodb+srv://admin:admin@bikeavailability.xapwjao.mongodb.net/?retryWrites=true&w=majority')
+db = client['IISProjekt']
+collection = db['BikeAvailability']
 
 
 def get_forecast():
@@ -77,10 +78,11 @@ def forecast():
         'hum': df['hum'].tolist(),
         'percp': df['percp'].tolist(),
         'wspeed': df['wspeed'].tolist(),
-        'vehicles_available': df['pm10'].tolist(),
+        'vehicles_available': df['vehicles_available'].tolist(),
         'date': df['date'].tolist(),
+        'hour': df['hour'].tolist(),
     }
-    col.insert_one(data)
+    collection.insert_one(data)
 
     return json_data
 
