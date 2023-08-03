@@ -10,7 +10,7 @@ MLFLOW_TRACKING_URI = "https://dagshub.com/anagasperin/IIS_projekt.mlflow"
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_experiment("monitoring")
 
-client = MongoClient('mongodb+srv://admin:admin@bikeavailability.xapwjao.mongodb.net/')
+client = MongoClient('')
 db = client['IISProjekt']
 collection = db['BikeAvailability']
 

@@ -21,7 +21,7 @@ run_id = client.get_latest_versions(
     'MLPRegressor', stages=['production'])[0].run_id
 model = mlflow.pyfunc.load_model(f'runs:/{run_id}/MLPRegressor')
 
-client = MongoClient('mongodb+srv://admin:admin@bikeavailability.xapwjao.mongodb.net/?retryWrites=true&w=majority')
+client = MongoClient('')
 db = client['IISProjekt']
 collection = db['BikeAvailability']
 
