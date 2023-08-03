@@ -6,6 +6,7 @@
 #   schedule:
 #     - cron: '0 0 * * *' # Runs daily at 01:00 (CEST/GMT+1)
 
+
 # jobs:
 #   test_api:
 #     runs-on: ubuntu-latest
