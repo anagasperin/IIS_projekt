@@ -97,7 +97,7 @@ jobs:
       
     steps:
       - env:
-        SHA_NEW: ${{ needs.get_bike_data.outputs.sha_new }}
+          SHA_NEW: ${{ needs.get_bike_data.outputs.sha_new }}
         run: echo "$SHA_NEW"
 
       - name: Checkout code
@@ -180,6 +180,10 @@ jobs:
       contents: write
       
     steps:
+      - env:
+          SHA_NEW: ${{ needs.get_weather_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -257,6 +261,10 @@ jobs:
       contents: write
       
     steps:
+      - env:
+          SHA_NEW: ${{ needs.merge_bike_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -334,6 +342,10 @@ jobs:
       contents: write
       
     steps:
+      - env:
+          SHA_NEW: ${{ needs.process_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -408,6 +420,10 @@ jobs:
       contents: write
 
     steps:
+      - env:
+          SHA_NEW: ${{ needs.merge_processed_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -458,6 +474,10 @@ jobs:
       contents: write
 
     steps:
+      - env:
+          SHA_NEW: ${{ needs.merge_processed_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -517,6 +537,10 @@ jobs:
       contents: write
 
     steps:
+      - env:
+          SHA_NEW: ${{ needs.validation.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -590,6 +614,10 @@ jobs:
       contents: write
 
     steps:
+      - env:
+          SHA_NEW: ${{ needs.update_reference_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+        
       - name: Checkout code
         uses: actions/checkout@v3
 
