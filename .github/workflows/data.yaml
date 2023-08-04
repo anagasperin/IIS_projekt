@@ -35,17 +35,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -54,15 +55,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -77,7 +77,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   get_weather_data:
     needs: get_bike_data
@@ -91,8 +96,15 @@ jobs:
       contents: write
       
     steps:
+      - env:
+        SHA_NEW: ${{ needs.get_bike_data.outputs.sha_new }}
+        run: echo "$SHA_NEW"
+
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_bike_data.outputs.sha_new }}
+          fetch-depth: 0
 
       - name: Install Poetry
         run: pipx install poetry
@@ -105,17 +117,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -124,15 +137,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -147,7 +159,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   merge_bike_data:
     needs: 
@@ -177,17 +194,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -196,15 +214,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Run script
         run: poetry run python ./src/data/merge_bike_data.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -219,7 +236,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   process_data:
     needs:
@@ -249,17 +271,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -268,8 +291,7 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Run scripts
         run: |
@@ -278,7 +300,7 @@ jobs:
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -293,7 +315,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   merge_processed_data:
     needs: process_data
@@ -321,7 +348,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
       - name: Install DVC
         run: |
@@ -329,9 +356,10 @@ jobs:
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -340,15 +368,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Run scripts
         run: poetry run python ./src/data/merge_processed_data.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -363,7 +390,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   stability:
     needs: merge_processed_data
@@ -390,25 +422,30 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
       
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Stability tests
         run: poetry run python src/data/data_stability.py
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   
   validation:
     needs: merge_processed_data
@@ -435,22 +472,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Validation tests
         run: poetry run python src/data/data_validation.py
@@ -463,6 +500,11 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   
   update_reference_data:
     needs: [stability, validation]
@@ -489,17 +531,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -508,15 +551,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Reference data update
         run: poetry run python src/data/update_reference.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -531,7 +573,12 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
+
+      - name: Get commit SHA and store it
+        id: sha_new
+        run: |
+          echo "SHA_NEW=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   
   split_test_train:
     needs: update_reference_data
@@ -557,17 +604,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-dev
+          poetry install --no-root --no-dev --no-interaction
 
-      - name: Install DVC
-        run: |
-          pip install dvc==2.51.0
+      # - name: Install DVC
+      #   run: |
+      #     pip install dvc==2.51.0
 
       - name: Setup Dagshub
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote modify origin --local auth basic
+          poetry run dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME_1 }}
+          poetry run dvc remote modify origin --local password ${{ secrets.DAGSHUB_PASSWORD_1 }}
+          poetry run dvc remote default origin
 
       - name: Setup git config
         run: |
@@ -576,15 +624,14 @@ jobs:
 
       - name: Pull changes
         run: |
-          git pull
-          dvc pull
+          poetry run dvc pull -f
 
       - name: Train/test split
         run: poetry run python src/data/split_test_train.py
 
       - name: Add data
         run: |
-          dvc add data
+          poetry run dvc add data
 
       - name: Commit changes
         run: |
@@ -599,7 +646,7 @@ jobs:
 
       - name: Push to dvc
         run: |
-          dvc push -r origin
+          poetry run dvc push
 
       # - name: Git & DVC
       #   run: |
