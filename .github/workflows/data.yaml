@@ -55,7 +55,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-        # dvc pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_bike_data.py
@@ -125,7 +125,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/fetch_weather_data.py
