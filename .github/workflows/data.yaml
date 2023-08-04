@@ -197,7 +197,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Run script
         run: poetry run python ./src/data/merge_bike_data.py
@@ -269,7 +269,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Run scripts
         run: |
@@ -341,7 +341,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Run scripts
         run: poetry run python ./src/data/merge_processed_data.py
@@ -405,7 +405,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Stability tests
         run: poetry run python src/data/data_stability.py
@@ -450,7 +450,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Validation tests
         run: poetry run python src/data/data_validation.py
@@ -509,7 +509,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Reference data update
         run: poetry run python src/data/update_reference.py
@@ -577,7 +577,7 @@ jobs:
       - name: Pull changes
         run: |
           git pull
-         # dvc pull
+          dvc pull
 
       - name: Train/test split
         run: poetry run python src/data/split_test_train.py
