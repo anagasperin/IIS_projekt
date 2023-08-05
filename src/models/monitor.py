@@ -15,47 +15,50 @@ db = client['IISProjekt']
 collection = db['BikeAvailability']
 
 def transform_categorical(column):
-    pm10 = column['pm10']
-    pm10 = pm10.str.replace('<', '')
-    nan_mask = pm10.isna()
-    pm10nan = pm10[nan_mask]
+    print (column)
+    vehicles_available = column['vehicles_available']
+    # vehicles_available = vehicles_available.std.replace('<', '')
+    nan_mask = vehicles_available.isna()
+    vehicles_availablenan = vehicles_available[nan_mask]
 
-    pm10 = pm10.str.strip().dropna().loc[lambda x: x.str.len() > 0]
-    pm10 = pm10.astype('float')
+    # vehicles_available = vehicles_available.std.strip().dropna().loc[lambda x: x.std.len() > 0]
+    vehicles_available = vehicles_available.astype('float')
 
-    pm10nan[:] = pm10.mean()
-    pm10 = pd.concat([pm10, pm10nan], axis=0)
+    vehicles_availablenan[:] = vehicles_available.mean()
+    vehicles_available = pd.concat([vehicles_available, vehicles_availablenan], axis=0)
 
-    column['pm10'] = pm10.astype('float')
+    column['vehicles_available'] = vehicles_available.astype('float')
     return column
 
 
-def evaluate_predictions(data_air):
-    csv = pd.read_csv(data_air, encoding='utf_8')
+def evaluate_predictions(bike_data):
+    csv = pd.read_csv(bike_data, encoding='utf_8')
     df = pd.DataFrame(csv)
 
-    pm10 = transform_categorical(df)
-    pm10 = pm10.rename(columns={'datum_od': 'date', 'pm10': 't'})
-    df = pm10
+    vehicles_available = transform_categorical(df)
+    df = vehicles_available
 
     data = collection.find()
     df1 = pd.DataFrame()
 
+    df['date'] = pd.to_datetime(df['datetime']).dt.date
+    df['hour'] = pd.to_datetime(df['datetime']).dt.hour
+
     for x in data:
-        d = {'date': x['date'], 'y': x['pm10']}
+        d = {'hour': x['hour'], 'y': x['vehicles_available']}
         tmp = pd.DataFrame(d)
         df1 = pd.concat([df1, tmp], axis=0)
 
-    df['date'] = pd.to_datetime(df['date'])
-    df1['date'] = pd.to_datetime(df1['date'])
+    # df['hour'] = pd.to_datetime(df['hour'])
+    # df1['hour'] = pd.to_datetime(df1['hour'])
 
-    df = pd.merge(df1, df, on='date', how='inner')
-    df = df.drop_duplicates(subset=['date'], keep='first')
+    df = pd.merge(df1, df, on=['hour'], how='inner')
+    df = df.drop_duplicates(subset=['hour'], keep='first')
     df = df.drop(columns='date')
 
-    mse_test = mean_squared_error(df['t'], df['y'])
-    mae_test = mean_absolute_error(df['t'], df['y'])
-    evs_test = explained_variance_score(df['t'], df['y'])
+    mse_test = mean_squared_error(df['vehicles_available'], df['y'])
+    mae_test = mean_absolute_error(df['vehicles_available'], df['y'])
+    evs_test = explained_variance_score(df['vehicles_available'], df['y'])
 
     mlflow.log_metric("MSE Test", mse_test)
     mlflow.log_metric("MAE Test", mae_test)
@@ -68,10 +71,10 @@ def main():
     root_dir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../..'))
 
-    data_path = os.path.join(
-        root_dir, 'data', 'preprocessed', 'data_air.csv')
+    bike_data = os.path.join(
+        root_dir, 'data', 'processed', 'bike_data.csv')
 
-    evaluate_predictions(data_path)
+    evaluate_predictions(bike_data)
 
 
 if __name__ == '__main__':

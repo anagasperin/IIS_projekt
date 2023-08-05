@@ -23,36 +23,55 @@ class CategoricalTransformer(BaseEstimator, TransformerMixin):
 def transform_categorical(column):
     print (column)
     vehicles_available = column['vehicles_available']
-    # vehicles_available = vehicles_available.std.replace('<', '')
+    #vehicles_available = vehicles_available.std.replace('<', '')
     nan_mask = vehicles_available.isna()
     vehicles_availablenan = vehicles_available[nan_mask]
 
-    # vehicles_available = vehicles_available.std.strip().dropna().loc[lambda x: x.std.len() > 0]
-    vehicles_available = vehicles_available.astype('float')
+    #vehicles_available = vehicles_available.std.strip().dropna().loc[lambda x: x.std.len() > 0]
+    vehicles_available = vehicles_available.astype(int)
 
     vehicles_availablenan[:] = vehicles_available.mean()
     vehicles_available = pd.concat([vehicles_available, vehicles_availablenan], axis=0)
 
-    column['vehicles_available'] = vehicles_available.astype('float')
+    column['vehicles_available'] = vehicles_available.astype(int)
     return column
 
-def transform_test(test_path, categorical_transform, numerical_transform):
+def transform_test(test_path, numerical_transform):
     csv = pd.read_csv(test_path, encoding='utf_8')
     test = pd.DataFrame(csv)
     print('Data read')
 
-    cat_features = test.select_dtypes(include=['object']).columns.tolist()
+    # cat_features = test.select_dtypes(include=['object']).columns.tolist()
     num_features = test.select_dtypes(
-        include=['float64', 'int64']).columns.tolist()
+        include=['int64']).columns.tolist()
 
     test_preprocessor = ColumnTransformer([
-        ('availability_transform', categorical_transform, cat_features),
+        # ('availability_transform', categorical_transform, cat_features),
         ('normal_transform', numerical_transform, num_features)
     ])
 
     arr = test_preprocessor.fit_transform(test)
     test = pd.DataFrame(
-        arr, columns=["hour", "vehicles_available", "temp", "hum", "percp", "wspeed", "capacity", "capacity_free"])
+        arr, columns=['temp', 'hum', 'percp', 'wspeed', 'hour', 'capacity', 'capacity_free', 'vehicles_available'])
+    return test.astype(int)
+
+def transform_test(test_path, numerical_transform):
+    csv = pd.read_csv(test_path, encoding='utf_8')
+    test = pd.DataFrame(csv)
+    print('Data read')
+
+    # cat_features = test.select_dtypes(include=['object']).columns.tolist()
+    num_features = test.select_dtypes(
+        include=['float64','int64']).columns.tolist()
+
+    test_preprocessor = ColumnTransformer([
+        # ('availability_transform', categorical_transform, cat_features),
+        ('normal_transform', numerical_transform, num_features)
+    ])
+
+    arr = test_preprocessor.fit_transform(test)
+    test = pd.DataFrame(
+        arr, columns=['temp', 'hum', 'percp', 'wspeed', 'hour', 'capacity', 'capacity_free', 'vehicles_available'])
     return test
 
 def train_model(train_path, test_path):
@@ -69,12 +88,12 @@ def train_model(train_path, test_path):
 
     num_features = ['temp', 'hum', 'percp', 'wspeed', 'hour', 'capacity', 'capacity_free']
 
-    categorical_transform = Pipeline([
-        ('transformer', CategoricalTransformer())
-    ])
+    # categorical_transform = Pipeline([
+    #     ('transformer', CategoricalTransformer())
+    # ])
 
-    arr = categorical_transform.fit_transform(y_train)
-    y_train = pd.DataFrame(arr, columns=['vehicles_available'])
+    # arr = categorical_transform.fit_transform(y_train)
+    # y_train = pd.DataFrame(arr, columns=['vehicles_available'])
 
     numerical_transform = Pipeline([
         ('imputer', SimpleImputer(strategy='mean'))
@@ -100,7 +119,7 @@ def train_model(train_path, test_path):
     search.fit(x_train, y_train)
 
     test = transform_test(
-        test_path, categorical_transform, numerical_transform)
+        test_path, numerical_transform)
     x_test = test.drop('vehicles_available', axis=1)
     y_test = pd.DataFrame(test['vehicles_available'])
 
@@ -109,6 +128,9 @@ def train_model(train_path, test_path):
                              registered_model_name="MLPRegressor")
 
     prediction = search.predict(x_test)
+    capacity = x_test['capacity'].values
+    prediction = np.clip(prediction, 0, capacity)
+    prediction = np.round(prediction).astype(int)
 
     # Calculate MSE and MAE for the test data
     mse_test = mean_squared_error(y_test, prediction)
