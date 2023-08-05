@@ -1,123 +1,182 @@
 name: Deploy Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  schedule:
-    - cron: '0 0 * * *' # Runs daily at 01:00 (CEST/GMT+1)
-
+ push:
+   branches:
+     - main
+ schedule:
+   - cron: '0 8 * * *' # Run at 8 AM every day
 
 jobs:
-  test_api:
-    runs-on: ubuntu-latest
+ install_deps:
+   runs-on: ubuntu-latest
+   if: github.event_name == 'push'
+   steps:
+     - uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
+     - name: Setup poetry
+       run: |
+         pipx install poetry
+     - name: Setup Python
+       uses: actions/setup-python@v3
+       with:
+         python-version: "3.10"
+         cache: 'poetry'
+     - name: Install dependencies
+       run: poetry install --no-root --no-dev --no-interaction
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+ api_test:
+   needs: install_dependencies
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-          cache: poetry
+     - name: Install dependencies
+       run: |
+         pipx install poetry
+     - name: Setup Python
+       uses: actions/setup-python@v3
+       with:
+         python-version: "3.10.5"
+         token: ${{ secrets.TKN }}
+         cache: poetry
 
-      - name: Install dependencies
-        run: |
-          pipx install poetry
-          poetry install --no-root --no-dev
+     - name: Run test
+       env: 
+         MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+         MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+         MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+         MONGO_URI: ${{ secrets.MONGO_URI }} 
+       run: poetry run pytest test/test_server_api.py
+ 
+ check:
+   needs: api_test
+   outputs:
+     run_job: ${{ steps.check_files.outputs.run_job }}
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+       with:
+         fetch-depth: 2
 
-      - name: API tests
-        run: poetry run pytest ./src/tests/api/api.py
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+     - name: check modified files
+       id: check_files
+       run: |
+         echo "=============== list modified files ==============="
+         git diff --name-only HEAD^ HEAD
+         
+         echo "========== check paths of modified files =========="
+         git diff --name-only HEAD^ HEAD > files.txt
+         echo "::set-output name=run_job::true"
+         while IFS= read -r file
+         do
+           echo $file
+           if [[ $file == src/* ]]; then
+             echo "This modified file is under the 'src' folder."
+             echo "::set-output name=run_job::true"
+             break
+           fi
+         done < files.txt
 
-  test_server:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-          cache: poetry
+ api_deploy:
+   needs: check
+   if: needs.check.outputs.run_job == 'true'
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v3
+     - name: Install dependencies
+       run: |
+         pipx install poetry
+     - name: Setup Python
+       uses: actions/setup-python@v3
+       with:
+         python-version: "3.10"
+         cache: poetry
+     
+     - name: Login to Docker Hub
+       uses: docker/login-action@v2
+       with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_TOKEN }}
+     - name: Set up Docker Buildx
+       uses: docker/setup-buildx-action@v2
+     - name: Build and push
+       uses: docker/build-push-action@v4
+       with:
+         context: .
+         file: ./Dockerfile
+         push: true
+         tags: ${{ secrets.DOCKERHUB_USERNAME }}/iis-flask:latest
 
-      - name: Install dependencies
-        run: |
-          pipx install poetry
-          poetry install --no-root --no-dev
+ web_deploy:
+   needs: check
+   #if: needs.check.outputs.run_job == 'true'
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v3
+     - name: Login to Docker Hub
+       uses: docker/login-action@v2
+       with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_TOKEN }}
+     - name: Set up Docker Buildx
+       uses: docker/setup-buildx-action@v2
+     - name: Build and push
+       uses: docker/build-push-action@v4
+       with:
+         context: src/client
+         file: src/client/Dockerfile
+         push: true
+         tags: ${{ secrets.DOCKERHUB_USERNAME }}/iis-ng:latest
 
-      - name: Prediction API
-        run: |
-          poetry run uvicorn src.serve.api:app --host 0.0.0.0 --port 8080 &
-          sleep 75
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
 
-      - name: Server tests
-        run: poetry run pytest ./src/tests/server
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          PREDICTION_API_URL: http://localhost:8080/predict
+ okteto_deploy:
+   needs: [api_deploy, web_deploy]
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v3
+     - name: Install dependencies
+       run: |
+         pipx install poetry
+     - name: Setup Python
+       uses: actions/setup-python@v3
+       with:
+         python-version: "3.10"
+         cache: 'poetry'
 
-  deploy:
-    needs: [test_api, test_server]
-    runs-on: ubuntu-latest
+     - name: Set context to Okteto Cloud
+       uses: okteto/context@latest
+       with:
+         token: ${{ secrets.OKTETO_TOKEN }}
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+     - name: Deploy your preview environment
+       uses: okteto/deploy-preview@latest
+       env:
+         TKN: ${{ secrets.TKN }}
+         MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+         MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+         MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+         MONGO_URI: ${{ secrets.MONGO_URI }} 
+       with:
+         name: staging-${{ github.event.number }}-anagasperin
+         scope: personal
+         timeout: 15m
 
-      - name: Create .env files
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          PREDICTION_API_URL: ${{ secrets.PREDICTION_API_URL }}
-        run: |
-          echo "MLFLOW_TRACKING_USERNAME=${MLFLOW_TRACKING_USERNAME}" >> .env
-          echo "MLFLOW_TRACKING_PASSWORD=${MLFLOW_TRACKING_PASSWORD}" >> .env
-          echo "MONGO_URI=${MONGO_URI}" >> .env
-          echo "PREDICTION_API_URL=${PREDICTION_API_URL}" >> .env
+     - uses: nev7n/wait_for_response@v1
+       with:
+         url: https://IIS_projekt-${{ github.event.number }}-anagasperin.cloud.okteto.net
+         responseCode: 200
+         timeout: 4000
 
-      - name: Set up Okteto CLI
-        uses: okteto/context@latest
-        with:
-          token: ${{ secrets.OKTETO_TOKEN }}
-
-      - name: Deploy to Okteto
-        uses: okteto/deploy-stack@latest
-        with:
-          name: guess_and_dress
-          build: true
-
-  monitor:
-    if: ${{ github.event_name == 'schedule' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          pipx install poetry
-          poetry install --no-root --no-dev
-
-      - name: Monitor
-        run: poetry run python ./src/serve/monitor.py
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+     - name: Build and deploy application container to Okteto Flask Namespace
+       uses: okteto/deploy-stack@main
+       with:
+         name: okteto-flask-app
+         build: true
