@@ -128,9 +128,12 @@ def train_model(train_path, test_path):
                              registered_model_name="MLPRegressor")
 
     prediction = search.predict(x_test)
-    capacity = x_test['capacity'].values
-    prediction = np.clip(prediction, 0, capacity)
-    prediction = np.round(prediction).astype(int)
+    capacity = x_test['capacity'].values.flatten()
+    print(prediction)
+    prediction = np.clip(prediction, 0, None)
+    rounded_predictions = np.round(prediction)
+    # Ensure the predictions do not exceed the corresponding capacities
+    prediction = np.minimum(rounded_predictions, capacity)
 
     # Calculate MSE and MAE for the test data
     mse_test = mean_squared_error(y_test, prediction)

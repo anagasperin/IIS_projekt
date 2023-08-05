@@ -22,12 +22,12 @@ def transform_categorical(column):
     vehicles_availablenan = vehicles_available[nan_mask]
 
     # vehicles_available = vehicles_available.std.strip().dropna().loc[lambda x: x.std.len() > 0]
-    vehicles_available = vehicles_available.astype('float')
+    vehicles_available = vehicles_available.astype(int)
 
     vehicles_availablenan[:] = vehicles_available.mean()
     vehicles_available = pd.concat([vehicles_available, vehicles_availablenan], axis=0)
 
-    column['vehicles_available'] = vehicles_available.astype('float')
+    column['vehicles_available'] = vehicles_available.astype(int)
     return column
 
 

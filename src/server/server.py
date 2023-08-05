@@ -84,14 +84,8 @@ def forecast():
     json_data = {key: list(df_dict[key].values()) for key in df_dict}
 
     data = {
-        'temp': df['temp'].tolist(),
-        'hum': df['hum'].tolist(),
-        'percp': df['percp'].tolist(),
-        'wspeed': df['wspeed'].tolist(),
         'vehicles_available': df['vehicles_available'].tolist(),
-        'hour': df['hour'].tolist(),
-        'capacity': df['capacity'].tolist(),
-        'capacity_free': df['capacity_free'].tolist()
+        'hour': df['hour'].tolist()
     }
     collection.insert_one(data)
 
